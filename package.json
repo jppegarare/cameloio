@@ -1,0 +1,19 @@
+{
+  "name": "camelo-io",
+  "version": "0.1.0",
+  "description": "Camelô.io — jogo multiplayer de navegador estilo .io com tema de camelô brasileiro",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.22.3",
+    "socket.io": "^4.8.4"
+  }
+}
