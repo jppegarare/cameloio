@@ -240,3 +240,43 @@ export function pontoAleatorioRua(mapa, rng = Math.random) {
     y: folga + rng() * (mapa.altura - 2 * folga),
   };
 }
+
+// =============================================================
+// Grafo das calçadas: os clientes andam de esquina em esquina.
+// Cada quarteirão tem 4 nós (cantos da calçada: 0 sup-esq, 1 sup-dir,
+// 2 inf-dir, 3 inf-esq), ligados em anel. Nós de quarteirões vizinhos
+// se ligam atravessando a rua pela faixa de pedestre.
+// =============================================================
+export function gerarGrafoCalcadas(mapa) {
+  const c = CONFIG.mapa;
+  const meio = mapa.calcada / 2;
+  const nos = [];
+  const idNo = (i, j, k) => (j * c.colunas + i) * 4 + k;
+  for (const q of mapa.quarteiroes) {
+    const cantos = [
+      [q.x + meio, q.y + meio],
+      [q.x + q.w - meio, q.y + meio],
+      [q.x + q.w - meio, q.y + q.h - meio],
+      [q.x + meio, q.y + q.h - meio],
+    ];
+    cantos.forEach(([x, y], k) => {
+      nos[idNo(q.i, q.j, k)] = { id: idNo(q.i, q.j, k), x, y, quarteirao: q.id, viz: [] };
+    });
+  }
+  const ligar = (a, b) => {
+    nos[a].viz.push(b);
+    nos[b].viz.push(a);
+  };
+  for (const q of mapa.quarteiroes) {
+    for (let k = 0; k < 4; k++) ligar(idNo(q.i, q.j, k), idNo(q.i, q.j, (k + 1) % 4));
+    if (q.i + 1 < c.colunas) {
+      ligar(idNo(q.i, q.j, 1), idNo(q.i + 1, q.j, 0));
+      ligar(idNo(q.i, q.j, 2), idNo(q.i + 1, q.j, 3));
+    }
+    if (q.j + 1 < c.linhas) {
+      ligar(idNo(q.i, q.j, 3), idNo(q.i, q.j + 1, 0));
+      ligar(idNo(q.i, q.j, 2), idNo(q.i, q.j + 1, 1));
+    }
+  }
+  return nos;
+}

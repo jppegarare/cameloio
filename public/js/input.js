@@ -13,11 +13,14 @@ export class Entrada {
   constructor() {
     this.apertadas = new Set();
     this.ativo = false;
+    this.aoNumero = null; // callback(indice 0..8, shift) — compra rápida no depósito
 
     window.addEventListener('keydown', (e) => {
       if (!this.ativo) return;
       if (TECLAS_JOGO.has(e.code)) e.preventDefault();
       this.apertadas.add(e.code);
+      const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
+      if (m && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey) this.aoNumero?.(Number(m[1]) - 1, e.shiftKey);
     });
     window.addEventListener('keyup', (e) => {
       this.apertadas.delete(e.code);

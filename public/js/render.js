@@ -4,7 +4,7 @@
 // =============================================================
 
 import { CONFIG } from '/shared/config.js';
-import { ajustarCor, hash01, retArred, desenharCamelo, desenharNome } from './sprites.js';
+import { ajustarCor, hash01, retArred, desenharCamelo, desenharNome, desenharCliente, desenharBalao } from './sprites.js';
 
 const COR = {
   foraDoMapa: '#3d5a3d',
@@ -47,6 +47,7 @@ export class Renderizador {
     this.zoom = 1;
     this.dpr = 1;
     this.escala = 1; // pixels do canvas por unidade do mundo
+    this.textos = []; // textos flutuantes ("+R$12")
     this.redimensionar();
   }
 
@@ -99,8 +100,28 @@ export class Renderizador {
   // Quadro
   // ---------------------------------------------------------
 
+  // Texto que sobe e some (ex.: "+R$12" numa venda)
+  adicionarTexto(x, y, texto, opcoes = {}) {
+    // vários textos no mesmo lugar ao mesmo tempo: empilha pra não sobrepor
+    const agora = performance.now();
+    const vizinhos = this.textos.filter((t) => agora - t.inicio < 500 && Math.abs(t.x - x) < 60 && Math.abs(t.y - y) < 60).length;
+    this.textos.push({
+      x, y: y - vizinhos * 22, texto,
+      cor: opcoes.cor || '#7CFC00',
+      tamanho: opcoes.tamanho || 20,
+      inicio: agora,
+      duracao: opcoes.duracao || 1300,
+    });
+    if (this.textos.length > 40) this.textos.shift();
+  }
+
   /**
-   * cena: { local: {x,y,angulo,cor,id,nome,fase,andando}, outros: [mesmo formato] }
+   * cena: {
+   *   local:    camelô do jogador {x, y, angulo, cor, id, nome, fase, andando, carga}
+   *   outros:   outros camelôs (mesmo formato)
+   *   clientes: NPCs {id, x, y, angulo, fase, andando, alpha, desejo, estado, prog, praMim}
+   *   t:        tempo em segundos (animações)
+   * }
    */
   desenhar(cena) {
     const ctx = this.ctx;
@@ -119,11 +140,52 @@ export class Renderizador {
     const { mw, mh } = this.visao();
     const visivel = (e) => Math.abs(e.x - this.cam.x) < mw + 80 && Math.abs(e.y - this.cam.y) < mh + 80;
 
-    const lista = cena.outros.filter(visivel);
-    if (cena.local) lista.push(cena.local);
-    lista.sort((a, b) => a.y - b.y);
-    for (const e of lista) desenharCamelo(ctx, e);
-    for (const e of lista) desenharNome(ctx, e.x, e.y - 44, e.nome, e === cena.local);
+    const camelos = (cena.outros || []).filter(visivel);
+    if (cena.local) camelos.push(cena.local);
+    const clientes = (cena.clientes || []).filter(visivel);
+
+    // corpos ordenados por y (quem está mais embaixo fica na frente)
+    const corpos = [];
+    for (const e of camelos) corpos.push({ y: e.y, e, camelo: true });
+    for (const e of clientes) corpos.push({ y: e.y, e, camelo: false });
+    corpos.sort((a, b) => a.y - b.y);
+    for (const c of corpos) {
+      if (c.camelo) desenharCamelo(ctx, c.e);
+      else desenharCliente(ctx, c.e);
+    }
+
+    // camada de cima: balões, nomes, textos flutuantes
+    const t = cena.t || 0;
+    for (const e of clientes) {
+      if (e.desejo >= 0 || e.estado === 3) {
+        ctx.globalAlpha = e.estado === 3 ? 1 : (e.alpha ?? 1);
+        desenharBalao(ctx, e.x, e.y, e.desejo, e.estado, e.prog, e.praMim, t, this.escala);
+      }
+    }
+    ctx.globalAlpha = 1;
+    for (const e of camelos) desenharNome(ctx, e.x, e.y - 44, e.nome, e === cena.local);
+    this.desenharTextos(ctx);
+  }
+
+  desenharTextos(ctx) {
+    const agora = performance.now();
+    this.textos = this.textos.filter((tx) => agora - tx.inicio < tx.duracao);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    for (const tx of this.textos) {
+      const f = (agora - tx.inicio) / tx.duracao;
+      const escala = f < 0.15 ? 0.6 + (f / 0.15) * 0.5 : 1.1 - Math.min(0.1, (f - 0.15));
+      ctx.globalAlpha = f > 0.7 ? 1 - (f - 0.7) / 0.3 : 1;
+      ctx.font = `900 ${Math.round(tx.tamanho * escala)}px "Trebuchet MS", system-ui, sans-serif`;
+      const y = tx.y - 50 - f * 50;
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = '#1b1b2f';
+      ctx.strokeText(tx.texto, tx.x, y);
+      ctx.fillStyle = tx.cor;
+      ctx.fillText(tx.texto, tx.x, y);
+    }
+    ctx.globalAlpha = 1;
   }
 
   // ---------------------------------------------------------

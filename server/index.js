@@ -44,6 +44,10 @@ io.on('connection', (socket) => {
     if (jogador) jogo.input(jogador, input);
   });
 
+  socket.on('comprar', (pedido) => {
+    if (jogador) jogo.comprar(jogador, pedido);
+  });
+
   socket.on('visao', (v) => {
     if (jogador && v) jogador.definirVisao(Number(v.mw), Number(v.mh));
   });

@@ -160,3 +160,172 @@ button#btn-jogar:disabled { opacity: 0.6; cursor: wait; }
 
 #status-conexao { min-height: 1.2em; margin: 10px 0 0; font-size: 14px; color: var(--vermelho); }
 .dica { margin: 8px 0 0; font-size: 13px; opacity: 0.7; }
+
+/* ---------------- HUD: dinheiro e carrinho ---------------- */
+
+#hud-topo-esq {
+  position: absolute;
+  left: max(12px, env(safe-area-inset-left));
+  top: max(10px, env(safe-area-inset-top));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 46vw;
+}
+
+#hud-dinheiro {
+  font-size: clamp(30px, 5vw, 44px);
+  font-weight: 900;
+  color: #7CFC00;
+  letter-spacing: -1px;
+  line-height: 1;
+  text-shadow: 3px 3px 0 #1b1b2f, -2px -2px 0 #1b1b2f, 2px -2px 0 #1b1b2f, -2px 2px 0 #1b1b2f;
+  transform-origin: left center;
+}
+#hud-dinheiro.pulsa-ganho { animation: pulsa 0.45s ease-out; }
+@keyframes pulsa {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.18); color: #ffd23f; }
+  100% { transform: scale(1); }
+}
+
+#hud-carrinho {
+  background: var(--painel);
+  border-radius: 10px;
+  padding: 6px 8px;
+  width: 220px;
+  max-width: 100%;
+}
+.carrinho-linha { display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 14px; }
+.carrinho-ico { font-size: 16px; }
+.barra { flex: 1; height: 10px; border-radius: 5px; background: rgba(255,255,255,0.18); overflow: hidden; }
+#hud-carrinho-barra { height: 100%; width: 0; background: var(--verde); transition: width 0.2s; }
+#hud-carrinho-barra.cheio { background: var(--laranja); }
+#hud-carrinho-itens { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+#hud-carrinho-itens:empty::before { content: "Carrinho vazio — passa no depósito!"; font-size: 12px; opacity: 0.75; }
+.chip-item {
+  display: inline-flex; align-items: center; gap: 2px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 8px; padding: 1px 6px 1px 2px;
+  font-size: 13px; font-weight: bold;
+}
+.chip-item img { width: 22px; height: 22px; }
+
+/* ---------------- HUD: ranking ---------------- */
+
+#hud-ranking {
+  position: absolute;
+  right: max(12px, env(safe-area-inset-right));
+  top: max(10px, env(safe-area-inset-top));
+  width: 210px;
+  background: var(--painel);
+  border-radius: 10px;
+  padding: 6px 8px 4px;
+  font-size: 13px;
+}
+#hud-ranking .titulo { font-weight: 900; margin-bottom: 3px; color: var(--amarelo); }
+#hud-ranking-lista { list-style: none; margin: 0; padding: 0; }
+#hud-ranking-lista li { display: flex; gap: 6px; padding: 1px 2px; border-radius: 4px; }
+#hud-ranking-lista li.eu { background: rgba(255,210,63,0.28); font-weight: bold; }
+#hud-ranking-lista li.separado { margin-top: 3px; border-top: 1px dashed rgba(255,255,255,0.3); }
+#hud-ranking-lista .pos { width: 24px; opacity: 0.8; }
+#hud-ranking-lista .nome { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#hud-ranking-lista .nome::before {
+  content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cor, #fff); margin-right: 4px; vertical-align: middle;
+}
+#hud-ranking-lista .din { color: #7CFC00; font-weight: bold; }
+
+/* ---------------- HUD: avisos ---------------- */
+
+#hud-avisos {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: min(440px, 50vw);
+}
+.aviso {
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 15px;
+  text-align: center;
+  background: rgba(27,27,47,0.88);
+  border: 2px solid rgba(255,255,255,0.25);
+  animation: entra 0.25s ease-out;
+  transition: opacity 0.4s, transform 0.4s;
+}
+.aviso-bom { border-color: var(--verde); }
+.aviso-erro { border-color: var(--vermelho); color: #ffb3b8; }
+.aviso.saindo { opacity: 0; transform: translateY(-10px); }
+@keyframes entra { from { opacity: 0; transform: translateY(-12px) scale(0.9); } to { opacity: 1; transform: none; } }
+
+/* ---------------- Menu do depósito ---------------- */
+
+#menu-deposito {
+  position: absolute;
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 24px));
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  pointer-events: auto;
+  background: rgba(255,255,255,0.96);
+  color: var(--escuro);
+  border-radius: 16px;
+  border: 4px solid var(--amarelo);
+  box-shadow: 0 6px 0 rgba(0,0,0,0.25);
+  padding: 8px 10px;
+  animation: sobe 0.18s ease-out;
+}
+@keyframes sobe { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+.menu-titulo { font-weight: 900; font-size: 18px; margin: 0 2px 4px; }
+.menu-titulo small { font-weight: normal; font-size: 12px; opacity: 0.65; margin-left: 6px; }
+#menu-itens { list-style: none; margin: 0; padding: 0; }
+.linha-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 4px; border-radius: 8px;
+}
+.linha-item:nth-child(odd) { background: rgba(0,0,0,0.04); }
+.linha-item.sem-grana { opacity: 0.45; }
+.linha-item .tecla {
+  width: 20px; height: 20px; border-radius: 5px; background: var(--escuro); color: #fff;
+  font-size: 12px; font-weight: bold; display: inline-flex; align-items: center; justify-content: center;
+}
+.linha-item img { width: 32px; height: 32px; }
+.linha-item .desc { flex: 1; display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+.linha-item .desc b { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.linha-item .desc small { font-size: 12px; opacity: 0.7; }
+.linha-item .tenho { font-size: 12px; font-weight: bold; color: #2a9d8f; min-width: 40px; text-align: right; }
+.linha-item button {
+  font: inherit; font-weight: bold; font-size: 13px;
+  border: none; border-radius: 8px; padding: 6px 8px;
+  background: var(--verde); color: #fff; cursor: pointer;
+  box-shadow: 0 3px 0 #1f8a80;
+}
+.linha-item button.encher { background: var(--laranja); box-shadow: 0 3px 0 #c06f00; }
+.linha-item button:active { transform: translateY(2px); box-shadow: none; }
+.linha-item button:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; }
+#menu-resumo { text-align: center; font-size: 13px; font-weight: bold; margin-top: 4px; opacity: 0.8; }
+
+/* ---------------- Botão de som ---------------- */
+
+#btn-som {
+  position: absolute;
+  left: max(12px, env(safe-area-inset-left));
+  bottom: calc(max(10px, env(safe-area-inset-bottom)) + 30px);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  background: var(--painel);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  pointer-events: auto;
+}

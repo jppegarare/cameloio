@@ -2,7 +2,17 @@
 
 Jogo multiplayer de navegador estilo .io com tema de camelô brasileiro: compra no depósito, vende na rua e foge do rapa!
 
-> Em desenvolvimento, por fases. **Fase atual: 1 (base)**: servidor, mapa, movimento, câmera e multiplayer.
+> Em desenvolvimento, por fases. **Fase atual: 2 (economia)**: depósitos, mercadorias, clientes, vendas, dinheiro e ranking.
+
+## Como jogar
+
+- **Andar:** WASD ou setas.
+- **Comprar:** pare na área amarela de um **depósito** (`$` no minimapa). Abre o menu: clique em **+1 / +5 / Encher** ou use as teclas **1–8** (com **Shift** compra 5).
+- **Vender:** clientes com um **balão** querem aquele item. Chegue perto (com o item no carrinho) que eles vêm até você; fique perto ~1 s e a venda sai sozinha.
+- Na **feirinha** (zona verde) os clientes pagam 20% menos.
+- De tempos em tempos chega **ônibus no terminal** com um monte de freguês.
+- Quebrou (sem dinheiro e carrinho vazio)? Em alguns segundos a tia manda um PIX.
+- O **ranking** (top 10 por dinheiro) fica no canto superior direito.
 
 ## Como rodar
 
@@ -29,11 +39,10 @@ npm run dev
 
 Abra duas abas (ou dois navegadores) em `http://localhost:3000`, entre com nomes diferentes e ande com **WASD** ou **setas**. Cada aba vê o outro camelô se mexendo.
 
-Dica: para os dois nascerem no mesmo lugar e se verem logo de cara, suba o servidor com um ponto de nascimento fixo (só para testes):
+Variáveis só para testes:
 
-```bash
-CAMELO_SPAWN=60,600 npm start
-```
+- `CAMELO_SPAWN=x,y` faz todo mundo nascer no mesmo ponto, por exemplo `CAMELO_SPAWN=60,600 npm start`.
+- `CAMELO_SEMENTE=12345` fixa o mapa. Com essa semente há um depósito em `300,860`, então dá pra nascer direto nele com `CAMELO_SEMENTE=12345 CAMELO_SPAWN=300,860 npm start`.
 
 ### Testar no celular (mesma rede Wi-Fi)
 
@@ -56,14 +65,16 @@ Abra o endereço "Na rede" no navegador do celular. Se não abrir, libere a port
 server/index.js        Express + Socket.io
 server/game.js         loop, estado do mundo, snapshots
 server/map.js          geração da cidade (quarteirões, depósitos, feirinha, praças, terminal)
-server/entities/       jogador (e, nas próximas fases, NPCs, rapa, bots...)
-shared/config.js       TODOS os números de balanceamento
+server/entities/       player.js (camelô), client.js (cliente NPC)
+shared/config.js       TODOS os números de balanceamento (preços, clientes, ranking...)
 shared/physics.js      movimento e colisão (servidor + predição do cliente)
+shared/economia.js     dinheiro (em centavos), carrinho, formatação
 public/js/main.js      tela inicial, conexão, loop
 public/js/net.js       socket, relógio, interpolação
 public/js/render.js    câmera e desenho da cidade (em chunks com cache)
 public/js/sprites.js   desenhos dos personagens
-public/js/hud.js       minimapa e informações
+public/js/hud.js       dinheiro, carrinho, ranking, avisos, menu do depósito, minimapa
+public/js/audio.js     sons gerados com Web Audio (cha-ching, compra, PIX, buzina)
 public/js/input.js     teclado
 ```
 

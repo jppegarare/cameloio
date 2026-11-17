@@ -14,6 +14,32 @@
 
   <!-- HUD (aparece durante o jogo) -->
   <div id="hud" class="oculto">
+    <div id="hud-topo-esq">
+      <div id="hud-dinheiro">R$ 20</div>
+      <div id="hud-carrinho">
+        <div class="carrinho-linha">
+          <span class="carrinho-ico" aria-hidden="true">🛒</span>
+          <div class="barra"><div id="hud-carrinho-barra"></div></div>
+          <span id="hud-carrinho-texto">0/10</span>
+        </div>
+        <div id="hud-carrinho-itens"></div>
+      </div>
+    </div>
+
+    <div id="hud-ranking">
+      <div class="titulo">🏆 Ranking</div>
+      <ol id="hud-ranking-lista"></ol>
+    </div>
+
+    <div id="hud-avisos" aria-live="polite"></div>
+
+    <div id="menu-deposito" class="oculto">
+      <div class="menu-titulo">DEPÓSITO <small>teclas 1–8 compram 1 · Shift+tecla compra 5</small></div>
+      <ul id="menu-itens"></ul>
+      <div id="menu-resumo"></div>
+    </div>
+
+    <button id="btn-som" type="button" aria-label="Som">🔊</button>
     <div id="hud-info"></div>
     <canvas id="minimapa"></canvas>
   </div>
@@ -28,7 +54,7 @@
       <div id="cores" role="radiogroup" aria-label="Cor da lona"></div>
       <button id="btn-jogar" type="button">Bora vender!</button>
       <p id="status-conexao" aria-live="polite"></p>
-      <p class="dica">PC: <b>WASD</b> ou <b>setas</b> pra andar</p>
+      <p class="dica">PC: <b>WASD</b> ou <b>setas</b> pra andar · compre no <b>depósito</b> e chegue perto de quem quer o que você tem</p>
     </div>
   </div>
 
