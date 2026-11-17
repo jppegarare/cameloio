@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ff9f1c">
+  <meta name="description" content="Camelô.io — compra no depósito, vende na rua e foge do rapa!">
+  <title>Camelô.io</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%92%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="jogo"></canvas>
+
+  <!-- HUD (aparece durante o jogo) -->
+  <div id="hud" class="oculto">
+    <div id="hud-info"></div>
+    <canvas id="minimapa"></canvas>
+  </div>
+
+  <!-- Tela inicial -->
+  <div id="tela-inicial" class="tela">
+    <div class="cartao">
+      <h1 class="logo"><span class="logo-camelo">Camelô</span><span class="logo-io">.io</span></h1>
+      <p class="slogan">Compra no depósito, vende na rua e <b>foge do rapa!</b></p>
+      <input id="nome" type="text" maxlength="16" placeholder="Seu nome de camelô" autocomplete="off" spellcheck="false">
+      <div class="rotulo">Cor da lona</div>
+      <div id="cores" role="radiogroup" aria-label="Cor da lona"></div>
+      <button id="btn-jogar" type="button">Bora vender!</button>
+      <p id="status-conexao" aria-live="polite"></p>
+      <p class="dica">PC: <b>WASD</b> ou <b>setas</b> pra andar</p>
+    </div>
+  </div>
+
+  <!-- Tela de desconexão -->
+  <div id="tela-desconectado" class="tela oculto">
+    <div class="cartao">
+      <h2>Caiu a conexão!</h2>
+      <p id="motivo-desconexao">O servidor sumiu igual camelô quando o rapa chega.</p>
+      <button id="btn-voltar" type="button">Voltar</button>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
